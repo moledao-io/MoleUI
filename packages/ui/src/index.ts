@@ -1,3 +1,5 @@
+export { ANIMATED_ICON_NAMES, AnimatedIcon, LockIcon } from './animated-icon';
+export type { AnimatedIconName, AnimatedIconProps, LockIconProps } from './animated-icon';
 export { Button } from './button';
 export type { ButtonProps } from './button';
 export { DeferredRender } from './deferred-render';
@@ -5,9 +7,7 @@ export type { DeferredRenderProps } from './deferred-render';
 export { Input } from './input';
 export type { InputProps } from './input';
 export { ICON_NAMES, Icon } from './icon';
-export type { IconName, IconProps } from './icon';
-export { LockIcon } from './lock-icon';
-export type { LockIconProps } from './lock-icon';
+export type { IconName, IconProps, IconStrokeMode } from './icon';
 export { MoleProvider } from './provider';
 export type { MoleProviderProps } from './provider';
 export {

@@ -3,11 +3,11 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
+    'animated-icon/index': 'src/animated-icon/index.ts',
     'button/index': 'src/button/index.ts',
     'deferred-render/index': 'src/deferred-render/index.ts',
     'icon/index': 'src/icon/index.ts',
     'input/index': 'src/input/index.ts',
-    'lock-icon/index': 'src/lock-icon/index.ts',
     'provider/index': 'src/provider/index.ts',
     'runtime/index': 'src/runtime/index.ts',
     'spinner/index': 'src/spinner/index.ts',

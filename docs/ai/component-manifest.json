@@ -1,0 +1,432 @@
+{
+  "schemaVersion": "1.0.0",
+  "documentType": "react-component-library-manifest",
+  "language": "en",
+  "package": {
+    "name": "moledao",
+    "version": "0.1.0",
+    "framework": "React",
+    "peerDependencies": {
+      "react": "^18.2.0 || ^19.0.0",
+      "react-dom": "^18.2.0 || ^19.0.0"
+    },
+    "moduleFormats": ["esm", "cjs"],
+    "target": "es2018",
+    "rootImport": "moledao",
+    "styleImport": "moledao/styles.css"
+  },
+  "machineReadableEndpoints": {
+    "quickReference": "/llms.txt",
+    "componentManifest": "/component-manifest.json"
+  },
+  "sourceOfTruth": {
+    "publicExports": "packages/ui/src/index.ts",
+    "packageExports": "packages/ui/package.json#exports",
+    "styles": "packages/ui/src/styles/index.css",
+    "componentDirectory": "packages/ui/src",
+    "precedence": ["TypeScript source", "package exports", "this manifest", "README"]
+  },
+  "aiInstructions": [
+    "Import moledao/styles.css once at the application entry point.",
+    "Use only documented components, props, enum values, icon names, and animated icon names.",
+    "Do not convert Button into an anchor; Button always renders a native button. Use Typography with state=link and href for the library's text-link treatment.",
+    "Prefer controlled props when application state already owns the value; otherwise use the documented default prop.",
+    "Preserve native DOM attributes and event handlers supported by each component's inherited attribute type.",
+    "Provide required accessible names. Never use placeholder text as the only accessible name for an Input.",
+    "Use MoleProvider near the application root when theme, density, locale, motion, or runtime behavior is needed.",
+    "Treat source paths as implementation references, not public import paths."
+  ],
+  "selectionGuide": {
+    "triggerAction": "Button",
+    "enterText": "Input",
+    "toggleBoolean": "Toggle",
+    "showContextualHint": "Tooltip",
+    "showStaticIcon": "Icon",
+    "showAnimatedStateIcon": "AnimatedIcon",
+    "showLoading": "Spinner",
+    "renderTextHierarchy": "Typography",
+    "provideThemeAndRuntime": "MoleProvider",
+    "deferOffscreenContent": "DeferredRender"
+  },
+  "globalUsage": {
+    "recommendedRoot": "<MoleProvider theme=\"system\">...</MoleProvider>",
+    "styleRule": "Import moledao/styles.css once; do not import internal CSS files.",
+    "classNamePrefix": "mole-",
+    "colorBehavior": "Icon, AnimatedIcon, and tone=current Spinner inherit currentColor.",
+    "refBehavior": "Button, Input, Toggle, Icon, AnimatedIcon, and LockIcon forward refs to their primary DOM element."
+  },
+  "components": {
+    "Button": {
+      "kind": "component",
+      "summary": "Triggers an action with MoleDAO visual variants, sizes, loading, read-only, full-width, and icon layouts.",
+      "importPaths": ["moledao", "moledao/button"],
+      "source": "packages/ui/src/button/Button.tsx",
+      "renders": "button",
+      "inherits": "React.ButtonHTMLAttributes<HTMLButtonElement>",
+      "requiredProps": [],
+      "props": {
+        "variant": { "type": "primary | destructive | white-line | secondary | destructive-secondary | link | solid | outline | ghost | danger", "default": "primary", "notes": "solid, outline, ghost, and danger are compatibility aliases for primary, white-line, link, and destructive." },
+        "size": { "type": "sm | md | lg", "default": "md" },
+        "loading": { "type": "boolean", "default": false, "notes": "Shows a spinner, sets aria-busy, and disables interaction." },
+        "readOnly": { "type": "boolean", "default": false, "notes": "Disables interaction and applies the read-only visual state." },
+        "disabled": { "type": "boolean", "default": false, "inherited": true },
+        "showIcon": { "type": "boolean", "default": true, "notes": "Shows the built-in design icon when no custom start content is supplied." },
+        "startContent": { "type": "ReactNode", "default": null },
+        "endContent": { "type": "ReactNode", "default": null },
+        "iconOnly": { "type": "boolean", "default": false },
+        "fullWidth": { "type": "boolean", "default": false },
+        "type": { "type": "button | submit | reset", "default": "button", "inherited": true },
+        "children": { "type": "ReactNode", "default": null }
+      },
+      "accessibility": [
+        "When iconOnly is true, provide aria-label or meaningful children; visible children are visually hidden.",
+        "loading and readOnly disable the native button.",
+        "Do not use Button as navigation because it renders a button, not an anchor."
+      ],
+      "example": "<Button variant=\"primary\" onClick={createProject}>创建项目</Button>"
+    },
+    "Input": {
+      "kind": "component",
+      "summary": "Native text input with label, helper text, semantic status, adornments, clear action, and password visibility action.",
+      "importPaths": ["moledao", "moledao/input"],
+      "source": "packages/ui/src/input/Input.tsx",
+      "renders": "div > input",
+      "inherits": "Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>",
+      "requiredProps": [],
+      "props": {
+        "label": { "type": "string", "default": null, "notes": "Visible label associated with the input." },
+        "size": { "type": "md | lg", "default": "lg" },
+        "status": { "type": "default | success | warning", "default": "default", "notes": "warning also sets aria-invalid=true." },
+        "helperText": { "type": "string", "default": null, "notes": "Connected through aria-describedby; warning helper text uses role=alert." },
+        "startContent": { "type": "ReactNode", "default": null },
+        "endContent": { "type": "ReactNode", "default": null },
+        "clearable": { "type": "boolean", "default": false },
+        "showPasswordToggle": { "type": "boolean", "default": false, "notes": "Only active when type=password." },
+        "fullWidth": { "type": "boolean", "default": false },
+        "value": { "type": "string | number | readonly string[]", "default": null, "inherited": true },
+        "defaultValue": { "type": "string | number | readonly string[]", "default": null, "inherited": true },
+        "onValueChange": { "type": "(value: string) => void", "default": null, "notes": "Called for typing and the built-in clear action." },
+        "onClear": { "type": "() => void", "default": null },
+        "disabled": { "type": "boolean", "default": false, "inherited": true },
+        "readOnly": { "type": "boolean", "default": false, "inherited": true }
+      },
+      "accessibility": [
+        "Provide label or aria-label. Do not rely only on placeholder.",
+        "Use status=warning for invalid input and explain the problem with helperText.",
+        "For controlled input, update value from onValueChange so the clear action stays synchronized."
+      ],
+      "example": "<Input label=\"项目名称\" value={name} onValueChange={setName} clearable />"
+    },
+    "Toggle": {
+      "kind": "component",
+      "summary": "Accessible controlled or uncontrolled boolean switch.",
+      "importPaths": ["moledao", "moledao/toggle"],
+      "source": "packages/ui/src/toggle/Toggle.tsx",
+      "renders": "button[role=switch]",
+      "inherits": "Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'onChange'>",
+      "requiredProps": ["label"],
+      "props": {
+        "label": { "type": "string", "required": true, "notes": "Used as aria-label." },
+        "checked": { "type": "boolean", "default": null, "notes": "Controlled state." },
+        "defaultChecked": { "type": "boolean", "default": false, "notes": "Initial uncontrolled state." },
+        "onCheckedChange": { "type": "(checked: boolean) => void", "default": null },
+        "showText": { "type": "boolean", "default": false },
+        "onText": { "type": "string", "default": "Yes" },
+        "offText": { "type": "string", "default": "No" },
+        "disabled": { "type": "boolean", "default": false, "inherited": true }
+      },
+      "accessibility": ["label is mandatory and should describe the setting, not its current value."],
+      "example": "<Toggle label=\"接收通知\" checked={enabled} onCheckedChange={setEnabled} />"
+    },
+    "Tooltip": {
+      "kind": "component",
+      "summary": "Hover/focus tooltip with four placements, horizontal alignment, Escape dismissal, and aria-describedby wiring.",
+      "importPaths": ["moledao", "moledao/tooltip"],
+      "source": "packages/ui/src/tooltip/Tooltip.tsx",
+      "renders": "span",
+      "inherits": "Omit<React.HTMLAttributes<HTMLSpanElement>, 'content'>",
+      "requiredProps": ["children", "content"],
+      "props": {
+        "children": { "type": "ReactElement", "required": true, "notes": "Exactly one element that accepts aria-describedby." },
+        "content": { "type": "ReactNode", "required": true },
+        "placement": { "type": "top | right | bottom | left", "default": "top" },
+        "align": { "type": "start | center | end", "default": "center", "notes": "Horizontal alignment for top and bottom placements." },
+        "open": { "type": "boolean", "default": null, "notes": "Controlled visibility; omit for hover/focus behavior." }
+      },
+      "accessibility": [
+        "Pass one focusable child such as Button or a native button.",
+        "Do not put essential information only inside a tooltip.",
+        "The component attaches aria-describedby and closes on Escape."
+      ],
+      "example": "<Tooltip content=\"复制链接\" placement=\"top\"><Button>复制</Button></Tooltip>"
+    },
+    "Icon": {
+      "kind": "component",
+      "summary": "Static Figma-derived vector icon with currentColor and automatic or fixed stroke scaling.",
+      "importPaths": ["moledao", "moledao/icon"],
+      "source": "packages/ui/src/icon/Icon.tsx",
+      "renders": "span > svg",
+      "inherits": "React.HTMLAttributes<HTMLSpanElement>",
+      "requiredProps": ["name"],
+      "props": {
+        "name": { "type": "IconName", "required": true, "enumSource": "constants.ICON_NAMES" },
+        "size": { "type": "sm | md | lg", "default": "md", "notes": "16px, 20px, or 24px." },
+        "strokeMode": { "type": "auto | fixed", "default": "auto", "notes": "auto scales the 1.5px source stroke with size; fixed uses a non-scaling stroke." },
+        "strokeWidth": { "type": "number", "default": null, "notes": "Pixel width. Supplying it implicitly activates fixed mode." },
+        "aria-label": { "type": "string", "default": null, "inherited": true }
+      },
+      "cssVariables": {
+        "--mole-icon-stroke-width": { "default": "1.5px", "scope": "fixed mode", "notes": "May be inherited from a parent; strokeWidth overrides it inline." }
+      },
+      "accessibility": [
+        "Decorative icons omit aria-label and are automatically aria-hidden.",
+        "Standalone informative icons require aria-label and receive role=img."
+      ],
+      "example": "<Icon name=\"utility-search\" size=\"lg\" strokeMode=\"fixed\" aria-label=\"搜索\" />"
+    },
+    "AnimatedIcon": {
+      "kind": "component",
+      "summary": "Registry-backed icon that animates between two states with shared speed, sound, interruption, and reduced-motion behavior.",
+      "importPaths": ["moledao", "moledao/animated-icon"],
+      "source": "packages/ui/src/animated-icon/AnimatedIcon.tsx",
+      "renders": "svg",
+      "inherits": "Omit<React.SVGAttributes<SVGSVGElement>, 'children'>",
+      "requiredProps": ["name", "active"],
+      "props": {
+        "name": { "type": "AnimatedIconName", "required": true, "enumSource": "constants.ANIMATED_ICON_NAMES" },
+        "active": { "type": "boolean", "required": true, "notes": "Selects the second state when true and animates on change." },
+        "size": { "type": "sm | md | lg | number", "default": "md", "notes": "Named sizes are 16px, 20px, and 24px; a number is an arbitrary pixel size." },
+        "speed": { "type": "number", "default": 1, "notes": "2 is twice as fast, 0.5 is half speed, 0 skips motion." },
+        "duration": { "type": "number", "default": null, "notes": "Base milliseconds before dividing by speed; otherwise uses the selected icon's timing." },
+        "sound": { "type": "boolean", "default": true },
+        "soundVolume": { "type": "number", "default": 1, "range": [0, 1] },
+        "onAnimationComplete": { "type": "(active: boolean) => void", "default": null }
+      },
+      "accessibility": [
+        "Decorative animated icons omit aria-label and are aria-hidden.",
+        "Standalone state icons require aria-label or aria-labelledby.",
+        "MoleProvider motion=reduced and the system reduced-motion preference skip animation."
+      ],
+      "example": "<AnimatedIcon name=\"lock\" active={locked} aria-label={locked ? '已锁定' : '未锁定'} />"
+    },
+    "LockIcon": {
+      "kind": "compatibility-component",
+      "summary": "Typed shorthand for AnimatedIcon name=lock.",
+      "importPaths": ["moledao", "moledao/animated-icon"],
+      "source": "packages/ui/src/animated-icon/LockIcon.tsx",
+      "renders": "svg",
+      "inherits": "Omit<AnimatedIconProps, 'name' | 'active' | 'onAnimationComplete'>",
+      "requiredProps": ["locked"],
+      "props": {
+        "locked": { "type": "boolean", "required": true },
+        "onAnimationComplete": { "type": "(locked: boolean) => void", "default": null }
+      },
+      "accessibility": ["Use the same labeling rules as AnimatedIcon."],
+      "example": "<LockIcon locked={locked} aria-label={locked ? '已锁定' : '未锁定'} />"
+    },
+    "Spinner": {
+      "kind": "component",
+      "summary": "Accessible loading indicator with current or brand color.",
+      "importPaths": ["moledao", "moledao/spinner"],
+      "source": "packages/ui/src/spinner/Spinner.tsx",
+      "renders": "span[role=status]",
+      "inherits": "React.HTMLAttributes<HTMLSpanElement>",
+      "requiredProps": [],
+      "props": {
+        "label": { "type": "string", "default": "加载中", "notes": "Visually hidden live-region text." },
+        "size": { "type": "sm | md | lg", "default": "md" },
+        "tone": { "type": "current | brand", "default": "current" }
+      },
+      "accessibility": ["Use a task-specific label when the default loading announcement is ambiguous."],
+      "example": "<Spinner label=\"正在创建项目\" tone=\"brand\" />"
+    },
+    "Typography": {
+      "kind": "component",
+      "summary": "Semantic typography levels and visual states for headings, body text, marks, links, and deletions.",
+      "importPaths": ["moledao", "moledao/typography"],
+      "source": "packages/ui/src/typography/Typography.tsx",
+      "renders": "h1 | h2 | h3 | h4 | p | span | a",
+      "inherits": "React.HTMLAttributes<HTMLElement>",
+      "requiredProps": ["children"],
+      "props": {
+        "children": { "type": "ReactNode", "required": true },
+        "level": { "type": "h1 | h2 | h3 | h4 | body-large | body | body-small | caption", "default": "body" },
+        "state": { "type": "default | secondary | success | warning | disabled | mark | link | delete", "default": "default" },
+        "as": { "type": "h1 | h2 | h3 | h4 | p | span | a", "default": null, "notes": "Defaults from level; state=link with href defaults to a." },
+        "href": { "type": "string", "default": null },
+        "target": { "type": "string", "default": null },
+        "rel": { "type": "string", "default": null }
+      },
+      "accessibility": [
+        "Choose heading levels by document hierarchy, not visual size alone.",
+        "For navigation, use state=link with href so an anchor is rendered.",
+        "state=disabled is visual text styling and does not disable an interactive parent."
+      ],
+      "example": "<Typography level=\"body\" state=\"link\" href=\"/docs\">查看文档</Typography>"
+    },
+    "MoleProvider": {
+      "kind": "provider-component",
+      "summary": "Application boundary for color theme, density, locale, motion, and the Mole runtime snapshot.",
+      "importPaths": ["moledao", "moledao/provider"],
+      "source": "packages/ui/src/provider/MoleProvider.tsx",
+      "renders": "div",
+      "inherits": "React.HTMLAttributes<HTMLDivElement>",
+      "requiredProps": ["children"],
+      "props": {
+        "children": { "type": "ReactNode", "required": true },
+        "theme": { "type": "light | dark | system", "default": "system" },
+        "density": { "type": "comfortable | compact", "default": "comfortable" },
+        "locale": { "type": "string", "default": null, "notes": "Sets the lang attribute; otherwise inherited lang may be used." },
+        "motion": { "type": "system | full | reduced", "default": "system" },
+        "runtime": { "type": "MoleRuntime", "default": null, "notes": "A private runtime is created when omitted." }
+      },
+      "accessibility": ["Prefer motion=system unless the product has an explicit user motion preference."],
+      "example": "<MoleProvider locale=\"zh-CN\" motion=\"system\" theme=\"system\">{children}</MoleProvider>"
+    },
+    "DeferredRender": {
+      "kind": "performance-component",
+      "summary": "Defers rendering until a container approaches the viewport, with SSR and no-IntersectionObserver fallbacks.",
+      "importPaths": ["moledao", "moledao/deferred-render"],
+      "source": "packages/ui/src/deferred-render/DeferredRender.tsx",
+      "renders": "div",
+      "inherits": "Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>",
+      "requiredProps": ["children"],
+      "props": {
+        "children": { "type": "ReactNode", "required": true },
+        "fallback": { "type": "ReactNode", "default": null },
+        "disabled": { "type": "boolean", "default": false },
+        "minHeight": { "type": "React.CSSProperties['minHeight']", "default": null },
+        "onVisible": { "type": "() => void", "default": null },
+        "rootMargin": { "type": "string", "default": "200px 0px" },
+        "threshold": { "type": "number | number[]", "default": 0 },
+        "ssr": { "type": "content | fallback", "default": "fallback" }
+      },
+      "accessibility": ["Use a meaningful fallback when delayed content is necessary to understand page progress."],
+      "example": "<DeferredRender fallback={<Spinner />} minHeight={240}><ExpensiveSection /></DeferredRender>"
+    }
+  },
+  "utilities": {
+    "createMoleRuntime": {
+      "importPaths": ["moledao", "moledao/runtime"],
+      "signature": "(options?: MoleRuntimeOptions) => MoleRuntime",
+      "options": {
+        "compatibility": { "type": "auto | modern | compatible", "default": "auto" },
+        "onDiagnostic": { "type": "(event: MoleRuntimeEvent) => void", "default": null }
+      },
+      "notes": "Normally pass the returned runtime to MoleProvider. It is SSR-safe and observes browser capabilities and user preferences."
+    },
+    "scheduleMoleTask": {
+      "importPaths": ["moledao", "moledao/runtime"],
+      "signature": "(priority: 'visual' | 'background', task: () => void, options?: { timeout?: number }) => () => void",
+      "returns": "Cancellation function"
+    },
+    "useMoleRuntime": {
+      "importPaths": ["moledao", "moledao/runtime"],
+      "signature": "() => MoleRuntimeSnapshot"
+    },
+    "useMoleCapability": {
+      "importPaths": ["moledao", "moledao/runtime"],
+      "signature": "(name: keyof MoleCapabilities) => boolean",
+      "names": ["coarsePointer", "focusVisible", "hover", "inert", "intersectionObserver", "resizeObserver"]
+    },
+    "useMolePreference": {
+      "importPaths": ["moledao", "moledao/runtime"],
+      "signature": "(name: keyof MolePreferences) => MolePreferences[typeof name]",
+      "names": ["colorScheme", "contrast", "forcedColors", "reducedMotion"]
+    }
+  },
+  "constants": {
+    "ICON_NAMES": [
+      "social-x",
+      "social-email",
+      "social-discord",
+      "social-telegram",
+      "social-github",
+      "social-linkedin",
+      "social-web",
+      "social-gmail",
+      "operation-display",
+      "operation-display-alt",
+      "operation-back",
+      "operation-save",
+      "operation-close",
+      "operation-close-block",
+      "operation-link",
+      "operation-unlink",
+      "operation-edit",
+      "operation-logout",
+      "operation-share",
+      "operation-report",
+      "operation-block",
+      "operation-hide",
+      "dashboard-cv",
+      "profile-location",
+      "profile-date",
+      "profile-company",
+      "profile-good",
+      "profile-icon",
+      "profile-profile",
+      "profile-like",
+      "profile-follow",
+      "profile-collection",
+      "profile-user",
+      "forms-settings",
+      "forms-copy",
+      "forms-delete",
+      "forms-single-choice",
+      "forms-multiple-choice",
+      "forms-dropdown",
+      "forms-input",
+      "forms-dropdown-alt",
+      "admin-console",
+      "utility-search",
+      "utility-translate",
+      "utility-translate-alt-1",
+      "utility-translate-alt-2",
+      "utility-translate-alt-3",
+      "utility-translate-alt-4"
+    ],
+    "ANIMATED_ICON_NAMES": ["lock"]
+  },
+  "designTokens": {
+    "coreColors": {
+      "--mole-color-brand-red": "#f44527",
+      "--mole-color-silver-black": "#25282d",
+      "--mole-color-dark-blue": "#858891",
+      "--mole-color-med-blue": "#bcc1cb",
+      "--mole-color-light-blue": "#dfe4ea",
+      "--mole-color-lightest-blue": "#f2f4f8",
+      "--mole-color-yellow": "#ffc94a",
+      "--mole-color-green": "#43c59e",
+      "--mole-color-blue": "#4285f4",
+      "--mole-color-purple": "#8b6fe8",
+      "--mole-color-pink": "#f06c9b"
+    },
+    "semantic": [
+      "--mole-color-surface",
+      "--mole-color-text",
+      "--mole-color-text-muted",
+      "--mole-color-border",
+      "--mole-color-input-success",
+      "--mole-shadow-focus"
+    ],
+    "typography": {
+      "--mole-font-latin": "Poppins",
+      "--mole-font-cjk": "Mole OPPO Sans",
+      "--mole-font-sans": "Poppins, Mole OPPO Sans, PingFang SC, sans-serif"
+    },
+    "motion": ["--mole-duration-fast", "--mole-duration-press", "--mole-duration-tooltip", "--mole-ease-out"],
+    "radius": ["--mole-radius-sm", "--mole-radius-md", "--mole-radius-lg"],
+    "componentSpecific": ["--mole-icon-stroke-width"]
+  },
+  "completeExample": "import { Button, Icon, Input, MoleProvider, Toggle, Tooltip } from 'moledao';\nimport 'moledao/styles.css';\n\nexport function Settings() {\n  return (\n    <MoleProvider locale=\"zh-CN\" theme=\"system\">\n      <Input label=\"账户名称\" clearable />\n      <Toggle label=\"接收通知\" />\n      <Tooltip content=\"保存设置\"><Button startContent={<Icon name=\"operation-save\" />}>保存</Button></Tooltip>\n    </MoleProvider>\n  );\n}",
+  "antiPatterns": [
+    "Do not import files from packages/ui/src in consumer applications.",
+    "Do not use undocumented variant strings or icon names.",
+    "Do not omit moledao/styles.css.",
+    "Do not place interactive controls inside Tooltip content.",
+    "Do not use icon color props; set CSS color/currentColor on the icon or an ancestor.",
+    "Do not use Button for navigation.",
+    "Do not make loading state depend only on animation; Spinner includes a live label."
+  ]
+}

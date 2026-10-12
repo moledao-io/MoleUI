@@ -2,9 +2,9 @@ import { createElement, type HTMLAttributes, type ReactNode } from 'react';
 
 import { classNames } from '../shared/classnames';
 
-export type TypographyLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'body-large' | 'body' | 'body-small' | 'caption';
+export type TypographyLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'body-large' | 'body' | 'body-small' | 'caption';
 export type TypographyState = 'default' | 'secondary' | 'success' | 'warning' | 'disabled' | 'mark' | 'link' | 'delete';
-export type TypographyElement = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'a';
+export type TypographyElement = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'a';
 
 export interface TypographyProps extends HTMLAttributes<HTMLElement> {
   as?: TypographyElement;
@@ -21,6 +21,8 @@ const defaultElements: Record<TypographyLevel, TypographyElement> = {
   h2: 'h2',
   h3: 'h3',
   h4: 'h4',
+  h5: 'h5',
+  h6: 'h6',
   'body-large': 'p',
   body: 'p',
   'body-small': 'p',

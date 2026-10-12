@@ -1,12 +1,26 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { Button, ICON_NAMES, Icon, Input, LockIcon, MoleProvider, Spinner, Toggle, Tooltip, Typography } from 'moledao';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { ANIMATED_ICON_NAMES, AnimatedIcon, Button, ICON_NAMES, Icon, Input, MoleProvider, Spinner, Toggle, Tooltip, Typography, type AnimatedIconName, type IconName } from 'moledao';
 
 type Theme = 'light' | 'dark';
+type PreviewDevice = 'pc' | 'pad' | 'phone';
+
+const previewDevices: { id: PreviewDevice; label: string }[] = [
+  { id: 'pc', label: 'PC' },
+  { id: 'pad', label: 'Pad' },
+  { id: 'phone', label: '手机' },
+];
+
+function initialPreviewDevice(): PreviewDevice {
+  if (typeof window === 'undefined') return 'pc';
+  if (window.innerWidth < 600) return 'phone';
+  if (window.innerWidth < 1200) return 'pad';
+  return 'pc';
+}
 
 const navGroups = [
   { title: '开始', items: [{ id: 'overview', label: '概览' }, { id: 'installation', label: '快速上手' }] },
   { title: '基础', items: [{ id: 'tokens', label: '设计令牌' }, { id: 'typography', label: 'Typography 文字' }] },
-  { title: '组件', items: [{ id: 'button', label: 'Button 按钮' }, { id: 'input', label: 'Input 输入框' }, { id: 'toggle', label: 'Toggle 开关' }, { id: 'tooltip', label: 'Tooltip 提示' }, { id: 'icon', label: 'Icon 图标' }, { id: 'lock-icon', label: 'LockIcon 锁动画' }, { id: 'spinner', label: 'Spinner 加载' }, { id: 'provider', label: 'MoleProvider' }] },
+  { title: '组件', items: [{ id: 'button', label: 'Button 按钮' }, { id: 'input', label: 'Input 输入框' }, { id: 'toggle', label: 'Toggle 开关' }, { id: 'tooltip', label: 'Tooltip 提示' }, { id: 'icon', label: 'Icon 图标' }, { id: 'animated-icon', label: 'AnimatedIcon 动画图标' }, { id: 'spinner', label: 'Spinner 加载' }, { id: 'provider', label: 'MoleProvider' }] },
   { title: '开发', items: [{ id: 'storybook', label: 'Storybook' }, { id: 'contributing', label: '扩展组件' }] },
 ] as const;
 
@@ -32,13 +46,15 @@ const colorGroups = [
 
 const typographyLevels = [
   { level: 'h1', label: 'H1', spec: '28px / Bold' },
-  { level: 'h2', label: 'H2', spec: '24px / Bold' },
-  { level: 'h3', label: 'H3', spec: '18px / Medium' },
-  { level: 'h4', label: 'H4', spec: '16px / Medium' },
+  { level: 'h2', label: 'H2', spec: '26px / Bold' },
+  { level: 'h3', label: 'H3', spec: '24px / Bold' },
+  { level: 'h4', label: 'H4', spec: '22px / Medium' },
+  { level: 'h5', label: 'H5', spec: '20px / Medium' },
+  { level: 'h6', label: 'H6', spec: '18px / Medium' },
   { level: 'body-large', label: 'Body Large', spec: '16px / Regular' },
   { level: 'body', label: 'Body Regular', spec: '14px / Regular' },
   { level: 'body-small', label: 'Body Small', spec: '12px / Regular' },
-  { level: 'caption', label: 'Caption', spec: '10px / Regular' },
+  { level: 'caption', label: 'Caption', spec: '12px / Regular' },
 ] as const;
 
 const typographyStates = [
@@ -80,14 +96,36 @@ import 'moledao/styles.css';
   主要
 </Button>`;
 
-const lockIconCode = `import { LockIcon } from 'moledao';
+const animatedIconCode = `import { AnimatedIcon } from 'moledao';
 import 'moledao/styles.css';
 
 const [locked, setLocked] = useState(true);
 
 <button onClick={() => setLocked((value) => !value)} type="button">
-  <LockIcon locked={locked} size="lg" speed={1} aria-label={locked ? '已锁定' : '未锁定'} />
+  <AnimatedIcon
+    name="lock"
+    active={locked}
+    size="lg"
+    speed={1}
+    aria-label={locked ? '已锁定' : '未锁定'}
+  />
 </button>`;
+
+const animatedIconDocs: Record<AnimatedIconName, {
+  label: string;
+  states: [inactive: string, active: string];
+  actions: [activate: string, deactivate: string];
+  sound: string;
+  description: ReactNode;
+}> = {
+  lock: {
+    label: '锁',
+    states: ['未锁定', '已锁定'],
+    actions: ['上锁', '解锁'],
+    sound: '解锁时',
+    description: <>锁梁抬起、绕左侧锁脚翻转 180° 后落下，上锁时带轻微回弹。参考 <a href="https://www.figma.com/design/9UrUKdruApKIBYprtHyXir/Moledao.io-Web-Compontes?node-id=61-1838" rel="noreferrer" target="_blank">Figma</a>。</>,
+  },
+};
 
 const spinnerCode = `import { Spinner } from 'moledao';
 
@@ -126,8 +164,13 @@ import 'moledao/styles.css';
 const iconCode = `import { Icon } from 'moledao';
 import 'moledao/styles.css';
 
+// 默认：描边随 16 / 20 / 24px 尺寸成比例变化
 <Icon name="utility-search" aria-label="搜索" />
-<Icon name="social-discord" size="lg" />`;
+<Icon name="social-discord" size="lg" />
+
+// 固定：不同尺寸都保持 1.5px 描边
+<Icon name="utility-search" size="sm" strokeMode="fixed" />
+<Icon name="utility-search" size="lg" strokeWidth={1.75} />`;
 
 const providerCode = `import { MoleProvider, Button } from 'moledao';
 import 'moledao/styles.css';
@@ -166,13 +209,44 @@ function Demo({
   code: string;
   overflowVisible?: boolean;
 }) {
+  const [autoDevice, setAutoDevice] = useState<PreviewDevice>(initialPreviewDevice);
+  const [selectedDevice, setSelectedDevice] = useState<PreviewDevice | null>(null);
+  const [codeOpen, setCodeOpen] = useState(false);
+  const codePanelId = useId();
+  const device = selectedDevice ?? autoDevice;
+
+  useEffect(() => {
+    const updateAutoDevice = () => setAutoDevice(initialPreviewDevice());
+    window.addEventListener('resize', updateAutoDevice);
+    return () => window.removeEventListener('resize', updateAutoDevice);
+  }, []);
+
   return (
-    <div className={overflowVisible ? 'docs-demo docs-demo--overflow-visible' : 'docs-demo'}>
-      <div className="docs-demo__stage">{children}</div>
-      <details className="docs-demo__details">
-        <summary>查看代码</summary>
+    <div className={overflowVisible ? 'docs-demo docs-demo--overflow-visible' : 'docs-demo'} data-preview={device}>
+      <div className="docs-demo__viewport">
+        <div className="docs-demo__stage">{children}</div>
+      </div>
+      <div className="docs-demo__toolbar">
+        <div aria-label="预览设备" className="docs-demo__devices" role="group">
+          {previewDevices.map(({ id, label }) => (
+            <button aria-pressed={device === id} key={id} onClick={() => setSelectedDevice(id)} type="button">
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          aria-controls={codePanelId}
+          aria-expanded={codeOpen}
+          className="docs-demo__code-toggle"
+          onClick={() => setCodeOpen((open) => !open)}
+          type="button"
+        >
+          查看代码 <span aria-hidden="true">⌄</span>
+        </button>
+      </div>
+      <div className="docs-demo__code" hidden={!codeOpen} id={codePanelId}>
         <CodeBlock code={code} />
-      </details>
+      </div>
     </div>
   );
 }
@@ -200,10 +274,37 @@ export function DocsApp() {
   const [activeId, setActiveId] = useState('overview');
   const [clickCount, setClickCount] = useState(0);
   const [inputValue, setInputValue] = useState('');
+  const [copiedIconName, setCopiedIconName] = useState<IconName | null>(null);
+  const [iconCopyError, setIconCopyError] = useState('');
+  const iconCopyTimeout = useRef<number | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [lockLocked, setLockLocked] = useState(true);
-  const [lockSpeed, setLockSpeed] = useState(1);
-  const [lockSound, setLockSound] = useState(true);
+  const [animatedName, setAnimatedName] = useState<AnimatedIconName>('lock');
+  const [animatedActive, setAnimatedActive] = useState(true);
+  const [animatedSpeed, setAnimatedSpeed] = useState(1);
+  const [animatedSound, setAnimatedSound] = useState(true);
+
+  useEffect(() => {
+    return () => {
+      if (iconCopyTimeout.current !== null) window.clearTimeout(iconCopyTimeout.current);
+    };
+  }, []);
+
+  async function copyIconCode(name: IconName) {
+    try {
+      await navigator.clipboard.writeText(`<Icon name="${name}" />`);
+      if (iconCopyTimeout.current !== null) window.clearTimeout(iconCopyTimeout.current);
+      setCopiedIconName(name);
+      setIconCopyError('');
+      iconCopyTimeout.current = window.setTimeout(() => {
+        setCopiedIconName(null);
+        iconCopyTimeout.current = null;
+      }, 2000);
+    } catch {
+      if (iconCopyTimeout.current !== null) window.clearTimeout(iconCopyTimeout.current);
+      setCopiedIconName(null);
+      setIconCopyError(`复制 ${name} 失败，请检查浏览器的剪贴板权限。`);
+    }
+  }
 
   useEffect(() => {
     const id = decodeURIComponent(window.location.hash.slice(1));
@@ -290,7 +391,7 @@ export function DocsApp() {
             <div className="docs-tags"><span>React 18 / 19</span><span>TypeScript</span><span>CSS Variables</span><span>MIT License</span></div>
             <div className="docs-callout">
               <strong>当前版本范围</strong>
-              <p>组件包现有 Button、Input、Toggle、Tooltip、Icon、LockIcon、Spinner、Typography 和 MoleProvider。参考文件夹中的 Radio 属于另一套原生 HTML/JS 实现，尚未进入当前 React 包；本页不会把它写成可用 API。</p>
+              <p>组件包现有 Button、Input、Toggle、Tooltip、Icon、AnimatedIcon、Spinner、Typography 和 MoleProvider。参考文件夹中的 Radio 属于另一套原生 HTML/JS 实现，尚未进入当前 React 包；本页不会把它写成可用 API。</p>
             </div>
           </section>
 
@@ -331,7 +432,7 @@ export function DocsApp() {
           <section className="docs-section" id="typography">
             <span className="docs-eyebrow">FOUNDATIONS / TYPOGRAPHY</span>
             <h2>Typography 文字</h2>
-            <p className="docs-section__lead">参考 <a href="https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=1602-50920" rel="noreferrer" target="_blank">Figma Typography</a>：西文使用 Poppins，中文使用 OPPO Sans。Mole UI 网页、文档和组件共享同一字体栈。</p>
+            <p className="docs-section__lead">参考 <a href="https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=1602-50920" rel="noreferrer" target="_blank">Figma Typography</a>：西文使用 Poppins，中文使用 OPPO Sans。以 14px 为正文基准，备注为 12px；往上每级增加 2px，直到 28px。Mole UI 网页、文档和组件共享这套字号。</p>
             <h3>文字层级</h3>
             <div className="docs-type-scale">
               {typographyLevels.map(({ level, label, spec }) => (
@@ -353,9 +454,9 @@ export function DocsApp() {
             <h3>使用方式</h3>
             <CodeBlock code={typographyCode} label="Typography.tsx" />
             <div className="docs-table-wrap"><table><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-              <tr><td><code>level</code></td><td><code>h1 | h2 | h3 | h4 | body-large | body | body-small | caption</code></td><td><code>body</code></td><td>对应设计稿的字号与字重，统一使用 1.5 行高。</td></tr>
+              <tr><td><code>level</code></td><td><code>h1 | h2 | h3 | h4 | h5 | h6 | body-large | body | body-small | caption</code></td><td><code>body</code></td><td>12px 备注、14px 正文、16–28px 每级递增 2px；统一使用 1.5 行高。</td></tr>
               <tr><td><code>state</code></td><td><code>default | secondary | success | warning | disabled | mark | link | delete</code></td><td><code>default</code></td><td>文字颜色或装饰；mark 与 delete 保留语义标签。</td></tr>
-              <tr><td><code>as</code></td><td><code>h1 | h2 | h3 | h4 | p | span | a</code></td><td>按 level 自动选择</td><td>需要时覆盖实际 HTML 标签。</td></tr>
+              <tr><td><code>as</code></td><td><code>h1 | h2 | h3 | h4 | h5 | h6 | p | span | a</code></td><td>按 level 自动选择</td><td>需要时覆盖实际 HTML 标签。</td></tr>
               <tr><td><code>href</code></td><td><code>string</code></td><td>—</td><td>链接状态提供 href 时渲染为可访问的链接。</td></tr>
             </tbody></table></div>
             <a className="docs-storybook-inline" href={`${storybookOrigin}/?path=/docs/foundations-typography--docs`} rel="noreferrer" target="_blank">在 Storybook 查看 Typography ↗</a>
@@ -494,75 +595,145 @@ export function DocsApp() {
           <section className="docs-section" id="icon">
             <span className="docs-eyebrow">COMPONENTS / ICONOGRAPHY</span>
             <h2>Icon 图标</h2>
-            <p className="docs-section__lead">来自 <a href="https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=3437-19426" rel="noreferrer" target="_blank">Figma Icon</a> 的 48 个原始 SVG 图标。默认 20px，可设 16 / 24px；颜色继承当前文字色。作为独立信息使用时请提供 <code>aria-label</code>。</p>
+            <p className="docs-section__lead">来自 <a href="https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=3437-19426" rel="noreferrer" target="_blank">Figma Icon</a> 的 48 个可调描边图标。默认 20px，可设 16 / 24px；描边会随尺寸智能缩放，也可锁定为统一粗细。颜色继承当前文字色。</p>
+            <h3>描边模式</h3>
+            <Demo code={iconCode}>
+              <div className="docs-icon-weight-demo">
+                <div className="docs-icon-weight-row">
+                  <strong>自动</strong>
+                  <Icon name="utility-search" size="sm" />
+                  <Icon name="utility-search" />
+                  <Icon name="utility-search" size="lg" />
+                  <span>1.2 / 1.5 / 1.8px</span>
+                </div>
+                <div className="docs-icon-weight-row">
+                  <strong>固定</strong>
+                  <Icon name="utility-search" size="sm" strokeMode="fixed" />
+                  <Icon name="utility-search" strokeMode="fixed" />
+                  <Icon name="utility-search" size="lg" strokeMode="fixed" />
+                  <span>统一 1.5px</span>
+                </div>
+              </div>
+            </Demo>
+            <p className="docs-small">固定模式的默认值由 <code>--mole-icon-stroke-width</code> 控制，也可以直接传入 <code>strokeWidth</code>；传入数值时会自动启用固定模式。作为独立信息使用时请提供 <code>aria-label</code>。</p>
+            <p className="docs-small">点击任意图标，复制对应的 <code>&lt;Icon name="..." /&gt;</code> 代码。</p>
+            <span aria-live="polite" className="docs-icon-copy-announcement" role="status">
+              {copiedIconName ? `已复制 ${copiedIconName} 的代码` : ''}
+            </span>
+            {iconCopyError && <p className="docs-icon-copy-error" role="alert">{iconCopyError}</p>}
             {iconGroups.map((group) => (
               <div className="docs-icon-group" key={group.title}>
                 <h3>{group.title}</h3>
                 <div className="docs-icon-grid">
-                  {group.names.map((name) => <div className="docs-icon-cell" key={name}><Icon name={name} /><code>{name}</code></div>)}
+                  {group.names.map((name) => (
+                    <button
+                      aria-label={`复制 ${name} 的 Icon 代码`}
+                      className="docs-icon-cell"
+                      data-copied={copiedIconName === name || undefined}
+                      key={name}
+                      onClick={() => void copyIconCode(name)}
+                      title={`复制 <Icon name="${name}" />`}
+                      type="button"
+                    >
+                      <span aria-hidden="true" className="docs-icon-cell__copied">已复制</span>
+                      <Icon name={name} />
+                      <code>{name}</code>
+                    </button>
+                  ))}
                 </div>
               </div>
             ))}
-            <CodeBlock code={iconCode} label="Icon.tsx" />
+            <h3>API</h3>
+            <div className="docs-table-wrap"><table><thead><tr><th>属性 / 变量</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
+              <tr><td><code>size</code></td><td><code>sm | md | lg</code></td><td><code>md</code></td><td>对应 16 / 20 / 24px。</td></tr>
+              <tr><td><code>strokeMode</code></td><td><code>auto | fixed</code></td><td><code>auto</code></td><td>描边随尺寸缩放，或保持固定像素粗细。</td></tr>
+              <tr><td><code>strokeWidth</code></td><td><code>number</code></td><td>—</td><td>设置固定描边粗细，并自动启用 <code>fixed</code>。</td></tr>
+              <tr><td><code>--mole-icon-stroke-width</code></td><td><code>&lt;length&gt;</code></td><td><code>1.5px</code></td><td>统一控制固定模式下的描边粗细。</td></tr>
+            </tbody></table></div>
             <a className="docs-storybook-inline" href={`${storybookOrigin}/?path=/docs/components-icon--docs`} rel="noreferrer" target="_blank">在 Storybook 查看 Icon ↗</a>
           </section>
 
-          <section className="docs-section" id="lock-icon">
+          <section className="docs-section" id="animated-icon">
             <span className="docs-eyebrow">COMPONENTS / ICONOGRAPHY</span>
-            <h2>LockIcon 锁动画</h2>
-            <p className="docs-section__lead">参考 <a href="https://www.figma.com/design/9UrUKdruApKIBYprtHyXir/Moledao.io-Web-Compontes?node-id=61-1838" rel="noreferrer" target="_blank">Figma 锁动画</a>。切换 <code>locked</code> 时锁梁抬起、绕左侧锁脚翻转 180° 后落下，解锁时播放开锁音效。点击下方的锁或按钮试试。</p>
-            <Demo code={lockIconCode}>
-              <div className="docs-lock-demo">
+            <h2>AnimatedIcon 动画图标</h2>
+            <p className="docs-section__lead">在两种状态之间带动画切换的图标。所有动画图标共用一个组件：用 <code>name</code> 选择图标、<code>active</code> 控制状态；速度、音效和减弱动效处理都是统一的。点击下方图标或按钮试试。</p>
+            <Demo code={animatedIconCode}>
+              <div className="docs-animated-demo">
                 <button
-                  aria-label={lockLocked ? '解锁' : '上锁'}
-                  className="docs-lock-demo__trigger"
-                  onClick={() => setLockLocked((value) => !value)}
+                  aria-label={animatedIconDocs[animatedName].actions[animatedActive ? 1 : 0]}
+                  className="docs-animated-demo__trigger"
+                  onClick={() => setAnimatedActive((value) => !value)}
                   type="button"
                 >
-                  <LockIcon locked={lockLocked} size={96} sound={lockSound} speed={lockSpeed} />
+                  <AnimatedIcon active={animatedActive} name={animatedName} size={96} sound={animatedSound} speed={animatedSpeed} />
                 </button>
-                <div className="docs-lock-demo__controls">
-                  <Button onClick={() => setLockLocked((value) => !value)} showIcon={false} size="sm" variant="secondary">
-                    {lockLocked ? '解锁' : '上锁'}
+                <div className="docs-animated-demo__controls">
+                  <div className="docs-animated-demo__names" role="group" aria-label="选择动画图标">
+                    {ANIMATED_ICON_NAMES.map((name) => (
+                      <button
+                        aria-pressed={animatedName === name}
+                        key={name}
+                        onClick={() => setAnimatedName(name)}
+                        type="button"
+                      >
+                        <AnimatedIcon active={animatedActive} name={name} size="sm" sound={false} speed={animatedSpeed} />
+                        <span>{name}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <Button onClick={() => setAnimatedActive((value) => !value)} showIcon={false} size="sm" variant="secondary">
+                    {animatedIconDocs[animatedName].actions[animatedActive ? 1 : 0]}
                   </Button>
-                  <label className="docs-lock-demo__speed">
-                    <span>速度 <b>{lockSpeed}×</b><small>{Math.round(380 / lockSpeed)}ms</small></span>
+                  <label className="docs-animated-demo__speed">
+                    <span>速度 <b>{animatedSpeed}×</b><small>{Math.round(380 / animatedSpeed)}ms</small></span>
                     <input
                       max={4}
                       min={0.25}
-                      onChange={(event) => setLockSpeed(Number(event.currentTarget.value))}
+                      onChange={(event) => setAnimatedSpeed(Number(event.currentTarget.value))}
                       step={0.25}
                       type="range"
-                      value={lockSpeed}
+                      value={animatedSpeed}
                     />
                   </label>
-                  <div className="docs-lock-demo__sound">
-                    <Toggle checked={lockSound} label="开锁音效" onCheckedChange={setLockSound} />
-                    <span aria-hidden="true">开锁音效</span>
+                  <div className="docs-animated-demo__sound">
+                    <Toggle checked={animatedSound} label="音效" onCheckedChange={setAnimatedSound} />
+                    <span aria-hidden="true">音效</span>
                   </div>
                 </div>
-                <div className="docs-lock-demo__sizes">
-                  {(['sm', 'md', 'lg'] as const).map((lockSize) => (
-                    <div className="docs-spinner-example" key={lockSize}>
-                      <LockIcon locked={lockLocked} size={lockSize} sound={false} speed={lockSpeed} />
-                      <span>{lockSize}</span>
+                <div className="docs-animated-demo__sizes">
+                  {(['sm', 'md', 'lg'] as const).map((iconSize) => (
+                    <div className="docs-spinner-example" key={iconSize}>
+                      <AnimatedIcon active={animatedActive} name={animatedName} size={iconSize} sound={false} speed={animatedSpeed} />
+                      <span>{iconSize}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </Demo>
+            <h3>图标列表</h3>
+            <div className="docs-table-wrap"><table><thead><tr><th>name</th><th>状态（false / true）</th><th>音效</th><th>说明</th></tr></thead><tbody>
+              {ANIMATED_ICON_NAMES.map((name) => (
+                <tr key={name}>
+                  <td><code>{name}</code> {animatedIconDocs[name].label}</td>
+                  <td>{animatedIconDocs[name].states[0]} / {animatedIconDocs[name].states[1]}</td>
+                  <td>{animatedIconDocs[name].sound}</td>
+                  <td>{animatedIconDocs[name].description}</td>
+                </tr>
+              ))}
+            </tbody></table></div>
             <h3>API</h3>
             <div className="docs-table-wrap"><table><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-              <tr><td><code>locked</code></td><td><code>boolean</code></td><td>必填</td><td>锁定状态，变化时播放上锁 / 解锁动画。</td></tr>
+              <tr><td><code>name</code></td><td><code>AnimatedIconName</code></td><td>必填</td><td>图标名称，见上方图标列表。</td></tr>
+              <tr><td><code>active</code></td><td><code>boolean</code></td><td>必填</td><td>图标状态（锁：是否上锁），变化时播放切换动画。</td></tr>
               <tr><td><code>size</code></td><td><code>sm | md | lg | number</code></td><td><code>md</code></td><td>16 / 20 / 24px，或任意像素值。</td></tr>
               <tr><td><code>speed</code></td><td><code>number</code></td><td><code>1</code></td><td>速度倍数：2 快一倍，0.5 慢一倍，0 跳过动画。</td></tr>
-              <tr><td><code>duration</code></td><td><code>number</code></td><td><code>380</code></td><td>基准时长（毫秒），实际时长为 <code>duration / speed</code>。</td></tr>
-              <tr><td><code>sound</code></td><td><code>boolean</code></td><td><code>true</code></td><td>从锁定变为解锁时播放开锁音效（Opus/WebM，885 字节）。</td></tr>
+              <tr><td><code>duration</code></td><td><code>number</code></td><td>随图标</td><td>基准时长（毫秒，锁为 380），实际时长为 <code>duration / speed</code>。</td></tr>
+              <tr><td><code>sound</code></td><td><code>boolean</code></td><td><code>true</code></td><td>播放图标自带的音效（如果有）。</td></tr>
               <tr><td><code>soundVolume</code></td><td><code>number</code></td><td><code>1</code></td><td>音效音量，0–1。</td></tr>
-              <tr><td><code>onAnimationComplete</code></td><td><code>(locked: boolean) =&gt; void</code></td><td>—</td><td>动画结束后回调；减弱动效时立即回调。</td></tr>
+              <tr><td><code>onAnimationComplete</code></td><td><code>(active: boolean) =&gt; void</code></td><td>—</td><td>动画结束后回调；减弱动效时立即回调。</td></tr>
             </tbody></table></div>
-            <p className="docs-small">颜色继承 <code>currentColor</code>。系统开启减弱动效或 <code>MoleProvider motion="reduced"</code> 时直接切换到终态。单独传达状态时请提供 <code>aria-label</code>。</p>
-            <a className="docs-storybook-inline" href={`${storybookOrigin}/?path=/docs/components-lockicon--docs`} rel="noreferrer" target="_blank">在 Storybook 查看 LockIcon ↗</a>
+            <p className="docs-small">颜色继承 <code>currentColor</code>。系统开启减弱动效或 <code>MoleProvider motion="reduced"</code> 时直接切换到终态。单独传达状态时请提供 <code>aria-label</code>。<code>&lt;LockIcon locked /&gt;</code> 是 <code>&lt;AnimatedIcon name="lock" active /&gt;</code> 的简写。</p>
+            <a className="docs-storybook-inline" href={`${storybookOrigin}/?path=/docs/components-animatedicon--docs`} rel="noreferrer" target="_blank">在 Storybook 查看 AnimatedIcon ↗</a>
           </section>
 
           <section className="docs-section" id="spinner">
@@ -611,7 +782,7 @@ export function DocsApp() {
               <a href={`${storybookOrigin}/?path=/docs/components-spinner--docs`} rel="noreferrer" target="_blank"><span>06 / FEEDBACK</span><strong>Spinner</strong><small>尺寸与颜色</small><b aria-hidden="true">↗</b></a>
               <a href={`${storybookOrigin}/?path=/docs/foundations-moleprovider--docs`} rel="noreferrer" target="_blank"><span>07 / FOUNDATIONS</span><strong>MoleProvider</strong><small>主题与密度</small><b aria-hidden="true">↗</b></a>
               <a href={`${storybookOrigin}/?path=/docs/foundations-typography--docs`} rel="noreferrer" target="_blank"><span>08 / FOUNDATIONS</span><strong>Typography</strong><small>文字层级、状态与中英混排</small><b aria-hidden="true">↗</b></a>
-              <a href={`${storybookOrigin}/?path=/docs/components-lockicon--docs`} rel="noreferrer" target="_blank"><span>09 / ICONOGRAPHY</span><strong>LockIcon</strong><small>上锁动画、速度与音效</small><b aria-hidden="true">↗</b></a>
+              <a href={`${storybookOrigin}/?path=/docs/components-animatedicon--docs`} rel="noreferrer" target="_blank"><span>09 / ICONOGRAPHY</span><strong>AnimatedIcon</strong><small>动画图标、速度与音效</small><b aria-hidden="true">↗</b></a>
             </div>
             <p className="docs-small">默认地址为 <code>http://127.0.0.1:6006</code>。静态构建输出至 <code>apps/playground/storybook-static/</code>，不包含在组件包发布产物中。</p>
           </section>

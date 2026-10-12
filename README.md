@@ -38,11 +38,19 @@ Toggle 参考 [Figma Toggle](https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ
 
 Tooltip 参考 [Figma Tooltip](https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=3456-19587)，支持四向位置、上 / 下方的对齐方式，以及悬停、键盘聚焦和 Escape 交互。子元素应是一个可聚焦的 React 元素；支持 `import { Tooltip } from 'moledao/tooltip'`。
 
-Icon 收录 [Figma Icon](https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=3437-19426) 中的 48 个 SVG 图标，默认 20px，支持 16 / 24px 与继承文字色。可从 `moledao` 或 `moledao/icon` 导入 `Icon` 和 `ICON_NAMES`。单独传达信息时请提供 `aria-label`。
+Icon 收录 [Figma Icon](https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=3437-19426) 中的 48 个可调描边图标，默认 20px，支持 16 / 24px 与继承文字色。描边默认随尺寸缩放，也可通过 `strokeMode="fixed"`、`strokeWidth` 或 `--mole-icon-stroke-width` 固定粗细。可从 `moledao` 或 `moledao/icon` 导入 `Icon` 和 `ICON_NAMES`。单独传达信息时请提供 `aria-label`。
 
-LockIcon 参考 [Figma 锁动画](https://www.figma.com/design/9UrUKdruApKIBYprtHyXir/Moledao.io-Web-Compontes?node-id=61-1838)，是一个受控的动画锁图标：切换 `locked` 时播放「锁梁抬起 → 绕左侧锁脚翻转 180° → 落下」，三段动作在一条时间线上交叠衔接，落下使用弹簧曲线（上锁时有轻微回弹的“咔哒”感）。尺寸同 Icon（`sm` / `md` / `lg` 或任意像素数字），颜色继承 `currentColor`；`duration` 设定基准时长（默认 380ms），`speed` 按倍数调速（默认 1；`2` 快一倍，`0.5` 慢一倍，`0` 跳过动画，实际时长 = `duration / speed`），`onAnimationComplete` 在动画结束后回调。减弱动效（系统设置或 `MoleProvider motion="reduced"`）时直接切换到终态。从锁定切换到解锁时会播放开锁音效（内联的 885 字节 Opus/WebM，Chrome、Edge、Firefox、Safari 17+ 支持，不支持的浏览器保持静音）；用 `sound={false}` 关闭、`soundVolume` 调整音量。页面 CSP 需允许 `media-src data:`。单独传达状态时请提供 `aria-label`；支持 `import { LockIcon } from 'moledao/lock-icon'`。
+AnimatedIcon 是一组在两种状态之间带动画切换的图标，共用同一个组件：`<AnimatedIcon name="lock" active={locked} />`。`name` 选择图标（`ANIMATED_ICON_NAMES` 列出全部），`active` 控制状态；尺寸同 Icon（`sm` / `md` / `lg` 或任意像素数字），颜色继承 `currentColor`；`speed` 按倍数调速（默认 1；`2` 快一倍，`0.5` 慢一倍，`0` 跳过动画），`duration` 覆盖图标自身的基准时长，实际时长 = `duration / speed`；`sound` / `soundVolume` 控制图标自带的音效，`onAnimationComplete` 在动画结束后回调。减弱动效（系统设置或 `MoleProvider motion="reduced"`）时直接切换到终态。单独传达状态时请提供 `aria-label`；支持 `import { AnimatedIcon } from 'moledao/animated-icon'`。
 
-Typography 参考 [Figma Typography](https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=1602-50920)：H1–H4、三级正文和 Caption，包含默认、次要、成功、警告、禁用、标记、链接与删除状态。使用 `import { Typography } from 'moledao'` 或 `moledao/typography`。`moledao/styles.css` 同时加载拉丁字符的 Poppins 和中文的 OPPO Sans；Mole UI 网页与文档使用同一字体栈。字体文件不适用组件代码的 MIT 许可，见 [OPPO Sans 许可](packages/ui/OPPO-SANS-LICENSE.txt) 和 [Poppins 许可](packages/ui/POPPINS-LICENSE.txt)。
+目前收录的动画图标：
+
+| name | 状态（false / true） | 说明 |
+| --- | --- | --- |
+| `lock` | 未锁定 / 已锁定 | 参考 [Figma 锁动画](https://www.figma.com/design/9UrUKdruApKIBYprtHyXir/Moledao.io-Web-Compontes?node-id=61-1838)：锁梁抬起 → 绕左侧锁脚翻转 180° → 落下，上锁时带弹簧回弹；解锁时播放内联的 885 字节 Opus/WebM 开锁音效（Chrome、Edge、Firefox、Safari 17+，不支持的浏览器保持静音，CSP 需允许 `media-src data:`）。`<LockIcon locked />` 是它的简写。 |
+
+新增动画图标：在 `packages/ui/src/animated-icon/icons/<name>/` 用 `defineAnimatedIcon` 描述静止姿态、动画曲线、SVG 和音效，再在 `registry.ts` 注册即可，速度、音效、减弱动效与中途反转由 AnimatedIcon 统一处理。
+
+Typography 参考 [Figma Typography](https://www.figma.com/design/HlPbDntJNj8msM3m7rzWzZ/Moledao-Wenyu.Zhang-Worker-file?node-id=1602-50920)：正文以 14px 为基准，备注和 Caption 为 12px，往上的字号按 16、18、20、22、24、26、28px 逐级递增。提供 H1–H6、三级正文和 Caption，以及默认、次要、成功、警告、禁用、标记、链接与删除状态。使用 `import { Typography } from 'moledao'` 或 `moledao/typography`。`moledao/styles.css` 同时加载拉丁字符的 Poppins 和中文的 OPPO Sans；Mole UI 网页与文档使用同一字体栈。字体文件不适用组件代码的 MIT 许可，见 [OPPO Sans 许可](packages/ui/OPPO-SANS-LICENSE.txt) 和 [Poppins 许可](packages/ui/POPPINS-LICENSE.txt)。
 
 ## 品牌颜色
 
@@ -76,7 +84,7 @@ packages/
     src/toggle/      Toggle 实现、导出和测试
     src/tooltip/     Tooltip 实现、导出和测试
     src/icon/        Icon 实现、导出和测试
-    src/lock-icon/   LockIcon 动画锁图标、几何数据和测试
+    src/animated-icon/ AnimatedIcon 动画图标（共用引擎、图标注册表、各图标几何与音效）和测试
     src/spinner/     Spinner 实现、导出和测试
     src/typography/  Typography 实现、导出和测试
     src/provider/    主题和密度容器
@@ -84,6 +92,10 @@ packages/
     src/deferred-render/  进入视口前延迟呈现复杂内容
     src/styles/      设计令牌与组件样式
 ```
+
+## AI / Agent 使用
+
+仓库根目录的 [`llms.txt`](llms.txt) 是给 AI 的快速入口；[`docs/ai/component-manifest.json`](docs/ai/component-manifest.json) 是可直接解析的完整组件清单，记录公共导入路径、属性、默认值、枚举、无障碍约束、图标名称、设计变量和正确示例。演示站会分别在 `/llms.txt` 与 `/component-manifest.json` 暴露这两份资料。AI 应以 TypeScript 源码和包导出为最终事实来源，不应猜测未记录的组件或属性。
 
 ## Runtime Engine
 
@@ -121,6 +133,7 @@ cancel();
 | `corepack pnpm storybook` | 启动 Storybook 组件预览 |
 | `corepack pnpm build:storybook` | 构建 Storybook 静态站点 |
 | `corepack pnpm build` | 构建组件包和演示站 |
+| `corepack pnpm docs:validate` | 校验 AI 组件清单与公共导出、图标名称是否同步 |
 | `corepack pnpm test` | 监听模式运行组件测试 |
 | `corepack pnpm check` | 依次运行 lint、类型、测试和构建检查 |
 | `corepack pnpm changeset` | 为一次对外变更添加版本说明 |
@@ -131,7 +144,8 @@ cancel();
 2. 在 `packages/ui/src/index.ts` 暴露公共 API。
 3. 如需支持 `moledao/<component>` 按需导入，把入口加入 `tsup.config.ts` 和 `package.json#exports`。
 4. 将样式放在 `src/styles/index.css` 的 `mole.components` layer，并沿用 `mole-` 类名前缀。
-5. 运行 `corepack pnpm check`，再用 `corepack pnpm changeset` 记录版本影响。
+5. 同步更新 `docs/ai/component-manifest.json`；校验脚本会检查公共组件、包信息和图标名称是否一致。
+6. 运行 `corepack pnpm check`，再用 `corepack pnpm changeset` 记录版本影响。
 
 ## 设计原则
 

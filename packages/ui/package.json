@@ -27,6 +27,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./animated-icon": {
+      "types": "./dist/animated-icon/index.d.ts",
+      "import": "./dist/animated-icon/index.js",
+      "require": "./dist/animated-icon/index.cjs"
+    },
     "./button": {
       "types": "./dist/button/index.d.ts",
       "import": "./dist/button/index.js",
@@ -66,11 +71,6 @@
       "types": "./dist/typography/index.d.ts",
       "import": "./dist/typography/index.js",
       "require": "./dist/typography/index.cjs"
-    },
-    "./lock-icon": {
-      "types": "./dist/lock-icon/index.d.ts",
-      "import": "./dist/lock-icon/index.js",
-      "require": "./dist/lock-icon/index.cjs"
     },
     "./provider": {
       "types": "./dist/provider/index.d.ts",

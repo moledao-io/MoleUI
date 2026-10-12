@@ -1,8 +1,48 @@
+import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
 import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+
+const aiDocuments = [
+  {
+    contentType: 'text/plain; charset=utf-8',
+    fileName: 'llms.txt',
+    source: fileURLToPath(new URL('../../llms.txt', import.meta.url)),
+  },
+  {
+    contentType: 'application/json; charset=utf-8',
+    fileName: 'component-manifest.json',
+    source: fileURLToPath(new URL('../../docs/ai/component-manifest.json', import.meta.url)),
+  },
+] as const;
+
+function aiDocumentsPlugin(): Plugin {
+  return {
+    name: 'mole-ai-documents',
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        const pathname = request.url?.split('?')[0]?.replace(/^\//, '');
+        const document = aiDocuments.find(({ fileName }) => fileName === pathname);
+        if (!document) return next();
+
+        response.setHeader('Content-Type', document.contentType);
+        response.setHeader('Cache-Control', 'no-cache');
+        response.end(readFileSync(document.source, 'utf8'));
+      });
+    },
+    generateBundle() {
+      for (const document of aiDocuments) {
+        this.emitFile({
+          fileName: document.fileName,
+          source: readFileSync(document.source, 'utf8'),
+          type: 'asset',
+        });
+      }
+    },
+  };
+}
 
 export default defineConfig({
   build: {
@@ -17,6 +57,7 @@ export default defineConfig({
   plugins: [
     react(),
     legacy(),
+    aiDocumentsPlugin(),
   ],
   resolve: {
     alias: [

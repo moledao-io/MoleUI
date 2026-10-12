@@ -3,13 +3,15 @@ import { Typography, type TypographyLevel, type TypographyState } from 'moledao'
 
 const levels: { level: TypographyLevel; label: string }[] = [
   { level: 'h1', label: 'H1 · 28px / Bold' },
-  { level: 'h2', label: 'H2 · 24px / Bold' },
-  { level: 'h3', label: 'H3 · 18px / Medium' },
-  { level: 'h4', label: 'H4 · 16px / Medium' },
+  { level: 'h2', label: 'H2 · 26px / Bold' },
+  { level: 'h3', label: 'H3 · 24px / Bold' },
+  { level: 'h4', label: 'H4 · 22px / Medium' },
+  { level: 'h5', label: 'H5 · 20px / Medium' },
+  { level: 'h6', label: 'H6 · 18px / Medium' },
   { level: 'body-large', label: 'Body Large · 16px / Regular' },
   { level: 'body', label: 'Body Regular · 14px / Regular' },
   { level: 'body-small', label: 'Body Small · 12px / Regular' },
-  { level: 'caption', label: 'Caption · 10px / Regular' },
+  { level: 'caption', label: 'Caption · 12px / Regular' },
 ];
 
 const states: { state: TypographyState; label: string }[] = [

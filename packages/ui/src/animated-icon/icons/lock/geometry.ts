@@ -26,12 +26,12 @@ export const SHACKLE_LIFT = 20;
 /** Shackle is only visible above this line, leaving the gap above the body. */
 export const SHACKLE_CLIP_Y = 75.33;
 
-export interface ShacklePose {
+export type ShacklePose = {
   /** 0 = angle 0° (closed over the body), 180 = swung out to the left (open). */
   angle: number;
   /** 0 = resting, 1 = lifted by SHACKLE_LIFT units. */
   lift: number;
-}
+};
 
 export const LOCKED_POSE: ShacklePose = { angle: 0, lift: 0 };
 export const UNLOCKED_POSE: ShacklePose = { angle: 180, lift: 0 };

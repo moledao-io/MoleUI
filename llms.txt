@@ -1,0 +1,60 @@
+# Mole UI
+
+> Mole UI is a lightweight, accessible React 18/19 component library for MoleDAO. The npm package name is `moledao`. It uses TypeScript and native CSS variables, with no Tailwind or CSS-in-JS runtime.
+
+## AI quick start
+
+1. Install/import components from `moledao` or a documented subpath.
+2. Import `moledao/styles.css` exactly once in the application entry point.
+3. Prefer wrapping the application in `MoleProvider` for theme, density, motion, locale, and runtime preferences.
+4. Use only props and enum values listed in the manifest. Do not invent component names, variants, icon names, or states.
+5. Forward normal DOM props when the manifest says a component inherits native attributes.
+6. Follow every accessibility rule in the selected component entry.
+
+```tsx
+import { Button, Input, MoleProvider } from 'moledao';
+import 'moledao/styles.css';
+
+export function App() {
+  return (
+    <MoleProvider locale="zh-CN" theme="system">
+      <Input label="项目名称" clearable />
+      <Button variant="primary">创建项目</Button>
+    </MoleProvider>
+  );
+}
+```
+
+## Machine-readable API
+
+- Public endpoint `/component-manifest.json`: canonical structured index of components, utilities, props, defaults, enum values, accessibility rules, icon names, tokens, examples, and source locations.
+- [Manifest source](docs/ai/component-manifest.json): repository copy of the same JSON document.
+- [Package exports](packages/ui/package.json): authoritative runtime and subpath exports.
+- [TypeScript public API](packages/ui/src/index.ts): authoritative exported symbols and types.
+- [Component source](packages/ui/src): authoritative behavior when the manifest and implementation differ.
+
+## Component selection
+
+- Actions: `Button`
+- Text entry: `Input`
+- Boolean preference: `Toggle`
+- Contextual hint: `Tooltip`
+- Static pictogram: `Icon`
+- Stateful motion pictogram: `AnimatedIcon`; use `LockIcon` only as the lock shorthand
+- Loading state: `Spinner`
+- Text hierarchy/state: `Typography`
+- App theme/runtime boundary: `MoleProvider`
+- Below-the-fold rendering: `DeferredRender`
+
+## Required accessibility behavior
+
+- Give icon-only `Button` instances an `aria-label`.
+- Give standalone informative `Icon` and `AnimatedIcon` instances an `aria-label`; decorative icons are hidden automatically.
+- Always provide `Toggle.label`.
+- Give `Input` either a visible `label` or an `aria-label`.
+- Give `Spinner` a task-specific `label` when the default “加载中” is insufficient.
+- Pass one focusable React element as `Tooltip.children`.
+
+## Validation
+
+Run `corepack pnpm check` after changing component code. The package supports React `^18.2.0 || ^19.0.0` and targets ES2018.
