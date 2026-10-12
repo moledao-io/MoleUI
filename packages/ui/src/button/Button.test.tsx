@@ -72,4 +72,20 @@ describe('Button', () => {
     expect(button).toBeDisabled();
     expect(button.querySelector('.mole-button__spinner')).toBeInTheDocument();
   });
+
+  it('supports the Figma read-only state without allowing interaction', async () => {
+    const onClick = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <Button onClick={onClick} readOnly size="sm" variant="white-line">
+        只读
+      </Button>,
+    );
+
+    const button = screen.getByRole('button', { name: '只读' });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute('data-read-only', 'true');
+    await user.click(button);
+    expect(onClick).not.toHaveBeenCalled();
+  });
 });

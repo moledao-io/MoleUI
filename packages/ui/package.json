@@ -14,7 +14,9 @@
     "**/*.css"
   ],
   "files": [
-    "dist"
+    "dist",
+    "OPPO-SANS-LICENSE.txt",
+    "POPPINS-LICENSE.txt"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -30,15 +32,55 @@
       "import": "./dist/button/index.js",
       "require": "./dist/button/index.cjs"
     },
+    "./deferred-render": {
+      "types": "./dist/deferred-render/index.d.ts",
+      "import": "./dist/deferred-render/index.js",
+      "require": "./dist/deferred-render/index.cjs"
+    },
+    "./input": {
+      "types": "./dist/input/index.d.ts",
+      "import": "./dist/input/index.js",
+      "require": "./dist/input/index.cjs"
+    },
+    "./icon": {
+      "types": "./dist/icon/index.d.ts",
+      "import": "./dist/icon/index.js",
+      "require": "./dist/icon/index.cjs"
+    },
     "./spinner": {
       "types": "./dist/spinner/index.d.ts",
       "import": "./dist/spinner/index.js",
       "require": "./dist/spinner/index.cjs"
     },
+    "./toggle": {
+      "types": "./dist/toggle/index.d.ts",
+      "import": "./dist/toggle/index.js",
+      "require": "./dist/toggle/index.cjs"
+    },
+    "./tooltip": {
+      "types": "./dist/tooltip/index.d.ts",
+      "import": "./dist/tooltip/index.js",
+      "require": "./dist/tooltip/index.cjs"
+    },
+    "./typography": {
+      "types": "./dist/typography/index.d.ts",
+      "import": "./dist/typography/index.js",
+      "require": "./dist/typography/index.cjs"
+    },
+    "./lock-icon": {
+      "types": "./dist/lock-icon/index.d.ts",
+      "import": "./dist/lock-icon/index.js",
+      "require": "./dist/lock-icon/index.cjs"
+    },
     "./provider": {
       "types": "./dist/provider/index.d.ts",
       "import": "./dist/provider/index.js",
       "require": "./dist/provider/index.cjs"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "import": "./dist/runtime/index.js",
+      "require": "./dist/runtime/index.cjs"
     },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
@@ -59,6 +101,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@fontsource/poppins": "^5.3.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",

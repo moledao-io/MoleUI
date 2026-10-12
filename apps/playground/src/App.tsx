@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, MoleProvider, Spinner } from 'moledao';
+import { Button, Icon, Input, MoleProvider, Spinner, Toggle, Tooltip, Typography } from 'moledao';
 
 type Theme = 'light' | 'dark';
 type PreviewState = 'default' | 'loading' | 'disabled';
@@ -43,6 +43,7 @@ export function App() {
   const [size, setSize] = useState<(typeof sizeOptions)[number]['value']>('md');
   const [previewState, setPreviewState] = useState<PreviewState>('default');
   const [iconOnly, setIconOnly] = useState(false);
+  const [sampleInput, setSampleInput] = useState('');
 
   const previewCode = iconOnly
     ? `<Button aria-label="预览按钮" iconOnly variant="${variant}" size="${size}"${previewState === 'default' ? '' : ` ${previewState === 'loading' ? 'loading' : 'disabled'}`} />`
@@ -121,7 +122,7 @@ export function App() {
           <a className="intro-card" href="#components">
             <span className="intro-card__eyebrow">COMPONENTS <span>02</span></span>
             <h2>从基础组件出发</h2>
-            <p>从 Button 与 Spinner 开始，逐步建立一致的交互语言。</p>
+            <p>从 Button、Input 与 Spinner 开始，逐步建立一致的交互语言。</p>
             <span className="intro-card__arrow" aria-hidden="true">↗</span>
           </a>
           <a className="intro-card" href="#tokens">
@@ -230,7 +231,7 @@ export function App() {
           <div className="section-heading section-heading--center">
             <span className="section-kicker">THE BUILDING BLOCKS</span>
             <h2 id="components-title">基础组件，按需选用</h2>
-            <p>现在从两个可靠的基础组件开始，之后继续扩展。</p>
+            <p>从文字、图标、操作、输入与反馈开始，持续扩展。</p>
           </div>
           <div className="component-grid">
             <article className="component-card component-card--button">
@@ -276,6 +277,79 @@ export function App() {
                 <div><h3>Spinner</h3><p>在等待时，也把体验交代清楚。</p></div>
               </div>
             </article>
+            <article className="component-card component-card--input">
+              <div className="component-card__top">
+                <span className="component-card__number">03 / FORMS</span>
+                <span className="component-card__category">READY TO USE</span>
+              </div>
+              <div className="component-card__preview input-preview">
+                <Input clearable label="你的名称" onValueChange={setSampleInput} placeholder="Focus in" status={sampleInput.length >= 3 ? 'success' : 'default'} value={sampleInput} />
+              </div>
+              <div className="component-card__footer">
+                <div><h3>Input</h3><p>清晰表达输入、反馈与每一种状态。</p></div>
+                <a href="./docs.html#input">查看文档 <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+            <article className="component-card component-card--typography">
+              <div className="component-card__top">
+                <span className="component-card__number">04 / FOUNDATIONS</span>
+                <span className="component-card__category">READY TO USE</span>
+              </div>
+              <div className="component-card__preview typography-preview">
+                <Typography level="h2">文字也有自己的秩序。 Typography matters.</Typography>
+                <Typography level="body-large" state="secondary">中文 OPPO Sans · English Poppins</Typography>
+                <Typography level="body-small">从清晰的层级和语义状态开始，建立一致的阅读体验。</Typography>
+              </div>
+              <div className="component-card__footer">
+                <div><h3>Typography</h3><p>中英混排与文字层级，沿用同一套设计语言。</p></div>
+                <a href="./docs.html#typography">查看文档 <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+            <article className="component-card component-card--toggle">
+              <div className="component-card__top">
+                <span className="component-card__number">05 / FORMS</span>
+                <span className="component-card__category">READY TO USE</span>
+              </div>
+              <div className="component-card__preview toggle-preview">
+                <Toggle label="关闭示例" showText />
+                <Toggle defaultChecked label="开启示例" showText />
+              </div>
+              <div className="component-card__footer">
+                <div><h3>Toggle</h3><p>把开与关，表达得清楚又轻巧。</p></div>
+                <a href="./docs.html#toggle">查看文档 <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+            <article className="component-card component-card--tooltip">
+              <div className="component-card__top">
+                <span className="component-card__number">06 / FEEDBACK</span>
+                <span className="component-card__category">READY TO USE</span>
+              </div>
+              <div className="component-card__preview tooltip-preview">
+                <Tooltip content="Tooltip" open placement="top"><Button size="sm" variant="secondary">了解更多</Button></Tooltip>
+              </div>
+              <div className="component-card__footer">
+                <div><h3>Tooltip</h3><p>恰好需要时，补上一句说明。</p></div>
+                <a href="./docs.html#tooltip">查看文档 <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+            <article className="component-card component-card--icon">
+              <div className="component-card__top">
+                <span className="component-card__number">07 / ICONOGRAPHY</span>
+                <span className="component-card__category">READY TO USE</span>
+              </div>
+              <div className="component-card__preview icon-preview">
+                <Icon name="social-discord" size="lg" />
+                <Icon name="social-github" size="lg" />
+                <Icon name="utility-search" size="lg" />
+                <Icon name="profile-user" size="lg" />
+                <Icon name="forms-settings" size="lg" />
+                <Icon name="operation-share" size="lg" />
+              </div>
+              <div className="component-card__footer">
+                <div><h3>Icon</h3><p>48 个原始设计图标，统一以 20px 为基础。</p></div>
+                <a href="./docs.html#icon">查看文档 <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
           </div>
         </section>
 
@@ -289,19 +363,35 @@ export function App() {
             <div className="tokens-panel__copy">
               <span className="tokens-panel__label">MOLEDAO BRAND COLOUR</span>
               <h3>让每一个界面都像我们。</h3>
-              <p>以 Moledao Red 为主色，搭配 Silver Black、蓝灰阶，以及用于反馈和强调的绿与黄。</p>
+              <p>以 Moledao Red 和 Silver Black 为主色，搭配蓝灰阶与黄、绿、蓝、紫、粉五种强调色。</p>
             </div>
-            <div className="swatches" aria-label="主题色板">
-              <div className="swatch swatch--red"><span>Moledao Red</span><code>#F44527</code></div>
-              <div className="swatch swatch--black"><span>Silver Black</span><code>#25282D</code></div>
-              <div className="swatch swatch--gradient"><span>Moledao Gradient</span><code>#BCC1CB → #F2F4F8</code></div>
-              <div className="swatch swatch--dark-gradient"><span>Dark Gradient</span><code>#BCC1CB → #3E424A</code></div>
-              <div className="swatch swatch--dark-blue"><span>Dark Blue</span><code>#858891</code></div>
-              <div className="swatch swatch--med-blue"><span>Med Blue</span><code>#BCC1CB</code></div>
-              <div className="swatch swatch--light-blue"><span>Light Blue</span><code>#DFE4EA</code></div>
-              <div className="swatch swatch--lightest-blue"><span>Lightest Blue</span><code>#F2F4F8</code></div>
-              <div className="swatch swatch--green"><span>Success Green</span><code>#13C39C</code></div>
-              <div className="swatch swatch--yellow"><span>Moledao Yellow</span><code>#FFD500</code></div>
+            <div className="swatch-groups" aria-label="主题色板">
+              <div className="swatch-group">
+                <h4>Primary Colors · 主色</h4>
+                <div className="swatches">
+                  <div className="swatch swatch--red"><span>Moledao Red</span><code>#F44527</code></div>
+                  <div className="swatch swatch--black"><span>Silver Black</span><code>#25282D</code></div>
+                </div>
+              </div>
+              <div className="swatch-group">
+                <h4>Secondary Colors · 辅助色</h4>
+                <div className="swatches">
+                  <div className="swatch swatch--dark-blue"><span>Dark Blue</span><code>#858891</code></div>
+                  <div className="swatch swatch--med-blue"><span>Med Blue</span><code>#BCC1CB</code></div>
+                  <div className="swatch swatch--light-blue"><span>Light Blue</span><code>#DFE4EA</code></div>
+                  <div className="swatch swatch--lightest-blue"><span>Lightest Blue</span><code>#F2F4F8</code></div>
+                </div>
+              </div>
+              <div className="swatch-group">
+                <h4>Accent Colors · 强调色</h4>
+                <div className="swatches">
+                  <div className="swatch swatch--yellow"><span>Moledao Yellow</span><code>#FFC94A</code></div>
+                  <div className="swatch swatch--green"><span>Moledao Green</span><code>#43C59E</code></div>
+                  <div className="swatch swatch--blue"><span>Moledao Blue</span><code>#4285F4</code></div>
+                  <div className="swatch swatch--purple"><span>Moledao Purple</span><code>#8B6FE8</code></div>
+                  <div className="swatch swatch--pink"><span>Moledao Pink</span><code>#F06C9B</code></div>
+                </div>
+              </div>
             </div>
           </div>
           <div className="principles-grid">
@@ -352,6 +442,7 @@ export function App() {
           <div className="footer__links"><span>探索</span><a href="#lab">在线体验</a><a href="#components">组件</a><a href="#tokens">设计语言</a></div>
           <div className="footer__links"><span>项目</span><a href="./docs.html">文档</a><a href="#start">快速开始</a><a href={githubUrl} rel="noreferrer" target="_blank">GitHub</a></div>
           <span className="footer__copyright">Mole UI · MIT License</span>
+          <small className="footer__fonts">字体使用 Poppins 与 OPPO Sans © OPPO。<a href="/OPPO-SANS-LICENSE.txt">OPPO Sans 许可</a> · <a href="/POPPINS-LICENSE.txt">Poppins 许可</a></small>
         </div>
       </footer>
     </MoleProvider>

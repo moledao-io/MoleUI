@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'node:url';
 
 import react from '@vitejs/plugin-react';
+import legacy from '@vitejs/plugin-legacy';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -13,7 +14,10 @@ export default defineConfig({
       },
     },
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    legacy(),
+  ],
   resolve: {
     alias: [
       {

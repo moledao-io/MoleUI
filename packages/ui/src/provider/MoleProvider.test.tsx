@@ -15,4 +15,16 @@ describe('MoleProvider', () => {
     expect(provider).toHaveAttribute('data-mole-theme', 'dark');
     expect(provider).toHaveAttribute('data-mole-density', 'compact');
   });
+
+  it('exposes explicit motion and locale settings without requiring runtime support', () => {
+    render(
+      <MoleProvider data-testid="provider" locale="zh-CN" motion="reduced">
+        content
+      </MoleProvider>,
+    );
+
+    const provider = screen.getByTestId('provider');
+    expect(provider).toHaveAttribute('data-mole-motion', 'reduced');
+    expect(provider).toHaveAttribute('lang', 'zh-CN');
+  });
 });

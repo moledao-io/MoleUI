@@ -1,5 +1,5 @@
 :root {
-  font-synthesis: none;
+  font-synthesis: weight;
   text-rendering: optimizeLegibility;
 }
 
@@ -17,7 +17,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   --page-border: var(--mole-color-light-blue);
   background: var(--page-surface);
   color: var(--page-ink);
-  font-family: "SF Pro Display", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--mole-font-sans);
   min-height: 100vh;
   transition: background-color 180ms ease, color 180ms ease;
 }
@@ -245,7 +245,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .lab-preview__code > span { background: var(--card-surface); border-radius: 6px; color: var(--page-muted); flex: none; font-size: 0.7rem; font-weight: 700; padding: 6px 8px; }
 .lab-preview__code code { color: var(--page-ink); font-size: 0.76rem; line-height: 1.6; overflow-x: auto; white-space: nowrap; }
 
-.component-grid { display: grid; gap: 22px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); }
+.component-grid { display: grid; gap: 22px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.component-card--button { grid-column: 1 / -1; }
+.component-card--typography { grid-column: 1 / -1; }
+.component-card--icon { grid-column: 1 / -1; }
 .component-card { background: var(--card-surface); border-radius: 22px; display: flex; flex-direction: column; min-height: 360px; overflow: hidden; padding: 28px; }
 .component-card__top, .component-card__footer { align-items: center; display: flex; justify-content: space-between; }
 .component-card__number { color: var(--page-muted); font-size: 0.72rem; font-weight: 720; letter-spacing: 0.04em; }
@@ -253,6 +256,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .button-preview { align-content: center; align-items: flex-start; flex-direction: column; gap: 13px; }
 .button-preview__row { display: flex; flex-wrap: wrap; gap: 10px; }
 .spinner-preview { gap: 26px; }
+.input-preview { padding: 22px 0; }
+.typography-preview { align-items: flex-start; flex-direction: column; gap: 14px; padding: 30px 0; }
+.toggle-preview { gap: 28px; }
+.tooltip-preview { padding-top: 34px; }
+.icon-preview { flex-wrap: wrap; gap: 30px; }
 .component-card__footer { border-top: 1px solid var(--page-border); gap: 12px; padding-top: 19px; }
 .component-card__footer h3 { font-size: 1.4rem; letter-spacing: -0.04em; margin: 0 0 4px; }
 .component-card__footer p { color: var(--page-muted); font-size: 0.84rem; margin: 0; }
@@ -262,19 +270,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .tokens-panel { background: var(--panel-surface); border: 1px solid var(--page-border); border-radius: 22px; display: grid; gap: 30px; padding: 38px; }
 .tokens-panel__copy h3 { font-size: clamp(1.8rem, 3vw, 2.4rem); letter-spacing: -0.05em; line-height: 1.25; margin: 14px 0; }
 .tokens-panel__copy p { color: var(--page-muted); line-height: 1.75; margin: 0; max-width: 650px; }
-.swatches { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.swatch-groups { display: grid; gap: 26px; }
+.swatch-group h4 { color: var(--page-muted); font-size: 0.78rem; letter-spacing: 0.02em; margin: 0 0 13px; }
+.swatches { display: grid; gap: 12px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .swatch { border-radius: 16px; display: flex; flex-direction: column; font-size: 0.9rem; font-weight: 750; height: 170px; justify-content: flex-start; line-height: 1.35; padding: 19px; }
 .swatch code { font-size: 0.72rem; font-weight: 500; margin-top: 5px; overflow-wrap: anywhere; }
 .swatch--red { background: var(--mole-color-brand-red); color: #fff; }
 .swatch--black { background: var(--mole-color-silver-black); color: #fff; }
-.swatch--gradient { background: var(--mole-gradient-light); color: var(--mole-color-silver-black); }
-.swatch--dark-gradient { background: var(--mole-gradient-dark); color: var(--mole-color-silver-black); }
 .swatch--dark-blue { background: var(--mole-color-dark-blue); color: #fff; }
 .swatch--med-blue { background: var(--mole-color-med-blue); color: var(--mole-color-silver-black); }
 .swatch--light-blue { background: var(--mole-color-light-blue); color: var(--mole-color-silver-black); }
 .swatch--lightest-blue { background: var(--mole-color-lightest-blue); color: var(--mole-color-silver-black); }
-.swatch--green { background: var(--mole-color-success-green); color: var(--mole-color-silver-black); }
+.swatch--green { background: var(--mole-color-green); color: var(--mole-color-silver-black); }
 .swatch--yellow { background: var(--mole-color-yellow); color: var(--mole-color-silver-black); }
+.swatch--blue { background: var(--mole-color-blue); color: #15171b; }
+.swatch--purple { background: var(--mole-color-purple); color: #15171b; }
+.swatch--pink { background: var(--mole-color-pink); color: var(--mole-color-silver-black); }
 .principles-grid { display: grid; gap: 18px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 18px; }
 .principles-grid > div { border: 1px solid var(--page-border); border-radius: 18px; padding: 25px; }
 .principles-grid span { color: var(--mole-color-brand-600); font-size: 0.68rem; font-weight: 750; letter-spacing: 0.08em; }
@@ -306,6 +317,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .footer__links a { color: var(--page-muted); font-size: 0.78rem; text-decoration: none; }
 .footer__links a:hover, .footer__links a:focus-visible { color: var(--mole-color-brand-600); text-decoration: underline; }
 .footer__copyright { align-self: end; color: var(--page-muted); font-size: 0.72rem; white-space: nowrap; }
+.footer__fonts { color: var(--page-muted); font-size: 0.72rem; grid-column: 1 / -1; }
+.footer__fonts a { color: inherit; text-underline-offset: 2px; }
 .app[data-mole-theme='dark'] .brand img, .app[data-mole-theme='dark'] .footer img { background: #fff; border-radius: 7px; box-sizing: content-box; padding: 4px 6px; }
 
 @media (max-width: 1000px) {
@@ -314,6 +327,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .site-nav a { padding-inline: 9px; }
   .version-pill { display: none; }
   .component-grid { grid-template-columns: 1fr; }
+  .component-card--button { grid-column: auto; }
+  .component-card--typography { grid-column: auto; }
+  .component-card--icon { grid-column: auto; }
   .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 

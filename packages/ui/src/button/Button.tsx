@@ -7,6 +7,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   iconOnly?: boolean;
   loading?: boolean;
+  readOnly?: boolean;
   size?: 'sm' | 'md' | 'lg';
   showIcon?: boolean;
   startContent?: ReactNode;
@@ -40,6 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       fullWidth = false,
       iconOnly = false,
       loading = false,
+      readOnly = false,
       size = 'md',
       showIcon = true,
       startContent,
@@ -74,9 +76,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         data-full-width={fullWidth || undefined}
         data-icon-only={iconOnly || undefined}
         data-loading={loading || undefined}
+        data-read-only={readOnly || undefined}
         data-size={size}
         data-variant={resolvedVariant}
-        disabled={disabled || loading}
+        disabled={disabled || loading || readOnly}
         type={type}
         {...props}
       >
